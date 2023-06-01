@@ -41,11 +41,10 @@ class MainActivity : AppCompatActivity() {
         if (numberToIncrease != null) {
            job = CoroutineScope(Main).launch {
 
-                while (isActive) {
                     delay(2000)
                     numberToIncrease++
                     resultTextView.text = numberToIncrease.toString()
-                }
+          
 
             }
             job!!.join()
