@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun addNumber() {
 
         val numberEditText = binding.numberAddedET
-        var resultTextView = binding.resultET
+        val resultTextView = binding.resultET
 
         var numberToIncrease = numberEditText.text.toString().toIntOrNull()
 
@@ -41,11 +41,9 @@ class MainActivity : AppCompatActivity() {
         if (numberToIncrease != null) {
            job = CoroutineScope(Main).launch {
 
-                while (isActive) {
                     delay(2000)
                     numberToIncrease++
                     resultTextView.text = numberToIncrease.toString()
-                }
 
             }
             job!!.join()
