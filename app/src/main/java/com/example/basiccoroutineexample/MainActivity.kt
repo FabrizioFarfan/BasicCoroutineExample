@@ -1,78 +1,66 @@
 package com.example.basiccoroutineexample
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.lifecycle.lifecycleScope
-import com.example.basiccoroutineexample.databinding.ActivityMainBinding
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Main
+    import androidx.appcompat.app.AppCompatActivity
+    import android.os.Bundle
+    import android.widget.EditText
+    import android.widget.TextView
+    import com.example.basiccoroutine.databinding.ActivityMainBinding
+    import kotlinx.coroutines.*
+    import kotlinx.coroutines.Dispatchers.Main
 
-class MainActivity : AppCompatActivity() {
+    class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private var firstTime = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.addButton.setOnClickListener {
+        private lateinit var binding: ActivityMainBinding
+        private lateinit var editText: EditText
+        private lateinit var textView: TextView
+        private var firstTime = false
+        private var currentValue = 0
 
 
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-            if (!firstTime){
-                lifecycleScope.launch(Main) {
-                    addOneFirstTime()
+
+            editText = binding.numberAddedET
+            textView = binding.resultET
+            binding.addButton.setOnClickListener {
+                val inputValue = editText.text.toString().toIntOrNull()
+                if (inputValue != null) {
+                    currentValue = inputValue
+                    increaseNumber()
+                }else if (!firstTime){
+                    addOneAnotherTime()
                 }
-            } else {
-                lifecycleScope.launch(Main) {
-                    addOneMoreTimes()
-                }
+
+
             }
-
         }
 
-    }
+        private fun increaseNumber() {
 
-    private suspend fun addOneFirstTime() {
+            CoroutineScope(Main).launch {
+                textView.text = currentValue.toString()
+                binding.addButton.isEnabled = false
+                editText.text.clear()
+                delay(2000) // Delay for 2 seconds
+                currentValue++
+                textView.text = currentValue.toString()
+                binding.addButton.isEnabled = true
 
-        val numberEditText = binding.numberAddedET
-        val resultTextView = binding.resultET
+            }
+        }
 
-        var numberToIncrease = numberEditText.text.toString().toIntOrNull()
-
-        resultTextView.text = numberToIncrease.toString()
-
-        if (numberToIncrease != null) {
-
-           val newNumber = CoroutineScope(Main).async {
-
+        private fun addOneAnotherTime(){
+            CoroutineScope(Main).launch {
+                binding.addButton.isEnabled = false // Disable the button temporarily
                 delay(2000)
-                numberToIncrease++
-                firstTime = true
-                resultTextView.text = numberToIncrease.toString()
+                currentValue++
+                textView.text = currentValue.toString()
+                binding.addButton.isEnabled = true
             }
-            newNumber.await()
-
-        } else { resultTextView.text = "Insert a Number" }
-
-    }
-
-    private suspend fun addOneMoreTimes(){
-
-        val resultTextView = binding.resultET
-        val resultTextViewValue = binding.resultET.text.toString().toInt()
-
-        val newNumber = CoroutineScope(Main).async {
-
-            delay(2000)
-
-            firstTime = true
-            resultTextView.text = resultTextViewValue.plus(1).toString()
         }
-        newNumber.await()
+
 
     }
-
-}
