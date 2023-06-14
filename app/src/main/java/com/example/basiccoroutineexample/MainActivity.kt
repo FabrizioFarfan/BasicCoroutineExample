@@ -30,7 +30,7 @@ package com.example.basiccoroutineexample
                 if (inputValue != null) {
                     currentValue = inputValue
                     increaseNumber()
-                }else if (!firstTime){
+                }else{
                     addOneAnotherTime()
                 }
 
